@@ -1,0 +1,52 @@
+<% if ActionMailer::Base.perform_deliveries %>
+
+<p>
+  <label for="settings_enabled">Enabled</label>
+  <%= check_box_tag 'settings[enabled]', '1', Setting.plugin_exception_notification['enabled'] == '1' %>
+</p>
+
+<p>
+  <label for="settings_email_prefix">Email prefix</label>
+  <%= text_field_tag 'settings[email_prefix]', Setting.plugin_exception_notification['email_prefix'] %>
+</p>
+
+<p>
+  <label for="settings_sender_address">Sender address</label>
+  <%= text_field_tag 'settings[sender_address]', Setting.plugin_exception_notification['sender_address'] %>
+</p>
+
+<p>
+  <%
+    user_options = []
+    User.includes(:email_addresses).references(:email_addresses).where.not(EmailAddress.arel_table[:address].eq(nil)).each do |u|
+      user_options << [ "#{u.name} (#{u.mail}, Admin: #{u.admin? ? 'Yes' : 'No'})", u.id ]
+    end
+  %>
+  <label for="settings_users">Users</label>
+  <%= select_tag 'settings[users]', options_for_select(user_options, Setting.plugin_exception_notification['users']), size: 10, multiple: true %>
+  <a href="#" onclick="$('#settings_users').val(''); return false;">Unselect all</a>
+</p>
+
+<p>
+  <%
+    group_options = []
+    Group.givable.all.each do |g|
+      group_options << [ "#{g.name} (Admin: #{g.admin? ? 'Yes' : 'No'})", g.id ]
+    end
+  %>
+  <label for="settings_groups">Groups</label>
+  <%= select_tag 'settings[groups]', options_for_select(group_options, Setting.plugin_exception_notification['groups']), size: 10, multiple: true %>
+  <a href="#" onclick="$('#settings_groups').val(''); return false;">Unselect all</a>
+</p>
+
+<p>
+  <label for="settings_recipients">Additional recpients</label>
+  <%= text_area_tag 'settings[recipients]', Setting.plugin_exception_notification['recipients'] %>
+  <em class="info">Comma separated list of email addresses</em>
+</p>
+
+<% else %>
+<div class="nodata">
+<%= simple_format(l(:text_email_delivery_not_configured)) %>
+</div>
+<% end %>
