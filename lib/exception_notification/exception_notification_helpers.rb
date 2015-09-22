@@ -8,7 +8,7 @@ module ExceptionNotificationHelpers
     if Setting.plugin_exception_notification['enabled'] == '1'
       recipients = []
       
-      user_ids = Setting.plugin_exception_notification['users']
+      user_ids = Setting.plugin_exception_notification['users'] || []
       group_ids = Setting.plugin_exception_notification['groups']
       user_ids.concat(
         Group.where(id: group_ids).includes(:users).references(:users).select(:user).pluck(:user_id)
