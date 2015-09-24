@@ -1,6 +1,6 @@
 module ExceptionNotificationHelpers
 
-  def init_exception_notification_from_settings!
+  module_function def init_exception_notification_from_settings!
     ExceptionNotifier.notifiers.each do |notifier|
       ExceptionNotifier.unregister_exception_notifier notifier
     end
@@ -29,7 +29,5 @@ module ExceptionNotificationHelpers
       end
     end
   end
-
-  module_function :init_exception_notification_from_settings!
 
 end
